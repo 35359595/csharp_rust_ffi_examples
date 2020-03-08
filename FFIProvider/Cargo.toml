@@ -1,0 +1,12 @@
+[package]
+name = "FFIProvider"
+version = "0.1.0"
+authors = ["ivan.temchenko <ivan.temchenko@yandex.ua>"]
+edition = "2018"
+
+[lib]
+name = "ffi_provider"
+crate-type = ["cdylib"]
+
+[dependencies]
+libc = "0.2.67"
