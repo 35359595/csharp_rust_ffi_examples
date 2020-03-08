@@ -15,7 +15,7 @@ namespace FFIInvoker
         public static extern StringHandle get_string();
 
         [DllImport(ProvideLibPath, EntryPoint = "to_lower", ExactSpelling = true)]
-        public static extern unsafe StringHandle to_lower(byte* s);
+        public static extern unsafe StringHandle to_lower(IntPtr s);
 
         [DllImport(ProvideLibPath, EntryPoint = "string_free", ExactSpelling = true)]
         public static extern void string_free(IntPtr s);
@@ -37,14 +37,8 @@ namespace FFIInvoker
             return true;
         }
 
-        public string IntoString()
-        {
-            int len = 0;
-            while (Marshal.ReadByte(handle, len) != 0) { ++len; }
-            byte[] buffer = new byte[len];
-            Marshal.Copy(handle, buffer, 0, buffer.Length);
-            return Encoding.UTF8.GetString(buffer);
-        }
+        public string IntoString() =>
+            Marshal.PtrToStringUTF8(handle) ?? "Failed to process";
     }
 
     class Program
@@ -59,17 +53,9 @@ namespace FFIInvoker
             Console.WriteLine(HelloString.IntoString());
             HelloString.Dispose();
 
-            unsafe
-            {
-                byte[] data = Encoding.UTF8.GetBytes("BooM");
-                fixed (byte* pointer = &data[0])
-                {
-                    // TODO: fix this invocation
-                    StringHandle LowerString = Native.to_lower(pointer);
-                    Console.WriteLine(LowerString.IntoString());
-                    LowerString.Dispose();
-                }
-            }
+            StringHandle LowerString = Native.to_lower(Marshal.StringToCoTaskMemUTF8("BooM"));
+            Console.WriteLine(LowerString.IntoString());
+            LowerString.Dispose();
         }
     }
 }

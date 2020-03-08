@@ -16,7 +16,9 @@ pub extern fn get_string() -> *mut c_char {
 #[no_mangle]
 pub extern fn to_lower(s: *mut c_char) -> *mut c_char {
     unsafe {
-        CString::new(CString::from_raw(s).to_str().unwrap().to_lowercase()).unwrap().into_raw()
+        CString::new(CString::from_raw(s).to_str().unwrap().to_lowercase())
+            .unwrap()
+            .into_raw()
     }
 }
 
